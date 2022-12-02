@@ -7,6 +7,7 @@ import * as ora from "ora";
 import { getAllFilesInFolder } from "./util";
 import { getTzoUiVersion, getTaroJsVersion } from "./api";
 import { exec } from "child_process";
+import { LYLB_TZO_UI_VER, TARO_JS_CLI_VER } from "./constants";
 import packagesManagement from "./config/packagesManagement";
 
 export const TEMPLATE_CREATOR = "template_creator.js";
@@ -148,9 +149,9 @@ export async function createApp(creator: Creator, params: IProjectConf, cb) {
   const projectPath = path.join(projectDir, projectName);
   const templatePath = creator.templatePath(template as string);
 
-  const version = await getTaroJsVersion();
+  const version = (await getTaroJsVersion()) || TARO_JS_CLI_VER;
 
-  const tzoUiVersion = await getTzoUiVersion("beta");
+  const tzoUiVersion = (await getTzoUiVersion("beta")) || LYLB_TZO_UI_VER;
 
   // 遍历出模板中的所有文件
   const files = await getAllFilesInFolder(templatePath, doNotCopyFiles);

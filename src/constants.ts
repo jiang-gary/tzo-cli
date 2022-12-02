@@ -5,7 +5,9 @@ export const TARO_BASE_CONFIG = "index.json";
 
 // export const LYLB_TZO_UI = "https://registry.npmjs.org/@lylb/tzo-ui";
 export const LYLB_TZO_UI = "https://registry.npmmirror.com/@lylb/tzo-ui";
+export const LYLB_TZO_UI_VER = "1.0.0-beta.7";
 export const TARO_JS_CLI = "https://registry.npmmirror.com/@tarojs/cli";
+export const TARO_JS_CLI_VER = "3.5.7";
 // https://registry.npmmirror.com/@tarojs/cli
 
 export const OUTPUT_DIR = "dist";

@@ -85,8 +85,8 @@ export default function fetchTemplate(
 export async function getTzoUiVersion(
   versionType: string = "beta"
 ): Promise<string> {
+  const spinner = ora(`获取组件库版本信息`).start();
   try {
-    const spinner = ora(`获取组件库版本信息`).start();
     const res = await axios.get(LYLB_TZO_UI);
     // console.log(res);
     if (res.status === 200) {
@@ -95,11 +95,13 @@ export async function getTzoUiVersion(
       spinner.succeed(`${chalk.green("获取组件版本信息成功")}`);
       return Promise.resolve(currentVersion);
     } else {
+      spinner.fail(`${chalk.grey("获取组件版本信息失败，使用默认版本")}`);
       return Promise.resolve("");
     }
     // spinner.fail("失败", res);
   } catch (e) {
-    console.log(e);
+    // console.log(e);
+    spinner.fail(`${chalk.grey("获取组件版本信息失败，使用默认版本")}`);
     return Promise.resolve("");
   }
 }
@@ -107,20 +109,22 @@ export async function getTzoUiVersion(
 export async function getTaroJsVersion(
   versionType: string = "latest"
 ): Promise<string> {
+  const spinner = ora(`获取Taro版本信息`).start();
   try {
-    const spinner = ora(`获取Taro版本信息`).start();
     const res = await axios.get(TARO_JS_CLI);
     if (res.status === 200) {
       const versionInfo = res.data["dist-tags"];
       const currentVersion = versionInfo[versionType];
-      spinner.succeed(`${chalk.green("获取组件版本信息成功")}`);
+      spinner.succeed(`${chalk.green("获取Taro版本信息成功")}`);
       return Promise.resolve(currentVersion);
     } else {
+      spinner.fail(`${chalk.grey("获取Taro版本信息失败，使用默认版本")}`);
       return Promise.resolve("");
     }
     // spinner.fail("失败", res);
   } catch (e) {
-    console.log(e);
+    // console.log(e);
+    spinner.fail(`${chalk.grey("获取Taro版本信息失败，使用默认版本")}`);
     return Promise.resolve("");
   }
 }

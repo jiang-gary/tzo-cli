@@ -9,15 +9,32 @@
   },
   "scripts": {
     "dev": "tsc --watch",
+    "build": "npm run clean && npm run prod",
+    "prod": "tsc",
+    "clean": "rimraf dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jiang-gary/tzo-cli.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "tzo-ui",
+    "weapp"
+  ],
+  "files": [
+    "bin",
+    "src",
+    "dist",
+    "templates",
+    "index.js",
+    "global.d.ts"
+  ],
+  "author": "lylb@jiangrui",
   "license": "ISC",
+  "engines": {
+    "node": ">=12"
+  },
   "bugs": {
     "url": "https://github.com/jiang-gary/tzo-cli/issues"
   },
