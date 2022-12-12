@@ -19,6 +19,7 @@ const styleExtMap = {
   none: "css",
 };
 const doNotCopyFiles = [".DS_Store", ".npmrc", TEMPLATE_CREATOR];
+const PACKAGE_JSON_ALIAS_REG = /\/pkg$/;
 
 // 创建文件方法
 function createFiles(
@@ -38,6 +39,7 @@ function createFiles(
     description,
     projectName,
     version,
+    taroVersion,
     css,
     date,
     typescript,
@@ -91,6 +93,7 @@ function createFiles(
         template,
         pageName,
         framework,
+        taroVersion,
         compiler,
         tzoUiVersion,
       },
@@ -117,6 +120,15 @@ function createFiles(
     if (changeExt && path.extname(destRePath).includes(".css")) {
       destRePath = destRePath.replace("css", `${currentStyleExt}`);
     }
+
+    // 兼容 Nodejs 13+ 调用 require 时 package.json 格式不能非法
+    if (taroVersion === "taro2" && PACKAGE_JSON_ALIAS_REG.test(fileRePath)) {
+      destRePath = path.join(
+        fileRePath.replace(PACKAGE_JSON_ALIAS_REG, "/package.json")
+      );
+      console.log(destRePath);
+    }
+
     creator.template(
       template as string,
       fileRePath,
@@ -141,17 +153,24 @@ export async function createApp(creator: Creator, params: IProjectConf, cb) {
     template,
     autoInstall = true,
     framework,
-    npm,
+    taroVersion,
   } = params;
 
   const logs: string[] = [];
+
   // 项目目录
   const projectPath = path.join(projectDir, projectName);
   const templatePath = creator.templatePath(template as string);
 
-  const version = (await getTaroJsVersion()) || TARO_JS_CLI_VER;
+  const version =
+    (await getTaroJsVersion(
+      (taroVersion as string) === "taro2" ? "2.x" : "latest"
+    )) || TARO_JS_CLI_VER;
 
-  const tzoUiVersion = (await getTzoUiVersion("beta")) || LYLB_TZO_UI_VER;
+  const tzoUiVersion =
+    (await getTzoUiVersion(
+      (taroVersion as string) === "taro2" ? "latest" : "beta"
+    )) || LYLB_TZO_UI_VER;
 
   // 遍历出模板中的所有文件
   const files = await getAllFilesInFolder(templatePath, doNotCopyFiles);
@@ -171,6 +190,7 @@ export async function createApp(creator: Creator, params: IProjectConf, cb) {
       projectPath,
       tzoUiVersion,
       pageName: "index",
+      taroVersion,
       period: "createApp",
     })
   );
@@ -218,7 +238,7 @@ export async function createApp(creator: Creator, params: IProjectConf, cb) {
     };
 
     if (autoInstall) {
-      const command: string = packagesManagement[npm as string].command;
+      const command: string = packagesManagement[taroVersion as string].command;
       const installSpinner = ora(
         `执行安装依赖 ${chalk.cyan.bold(command)}, 需要一会...`
       ).start();

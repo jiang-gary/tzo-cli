@@ -13,6 +13,7 @@ export interface IProjectConf {
   description?: string;
   typescript?: boolean;
   framework?: string;
+  taroVersion: string | null;
   compiler?: string;
   css?: "none" | "sass" | "stylus" | "less";
   templateSource?: string;
@@ -34,6 +35,7 @@ export default class Project extends Creator {
       {
         projectName: "",
         projectDir: "",
+        taroVersion: null,
         framework: "react",
         npm: "npm",
         compiler: "webpack5",
@@ -54,6 +56,8 @@ export default class Project extends Creator {
     console.log();
     try {
       const answers = await this.ask();
+      this.conf.template =
+        answers.taroVersion === "taro2" ? "default-taro2" : "default";
       const date = new Date();
       this.conf = Object.assign(this.conf, answers);
       this.conf.date = `${date.getFullYear()}-${
@@ -68,6 +72,7 @@ export default class Project extends Creator {
   async ask() {
     let prompts: Record<string, unknown>[] = [];
     const conf = this.conf;
+    this.askTaroVersion(conf, prompts);
     this.askProjectName(conf, prompts);
     this.askDescription(conf, prompts);
     this.askTypescript(conf, prompts);
@@ -83,6 +88,18 @@ export default class Project extends Creator {
       // ...templateChoiceAnswer,
     };
   }
+
+  askTaroVersion = function (conf, prompts) {
+    const taroChoices = ["taro2", "taro3"];
+    if ((typeof conf.taroVersion as string | undefined) !== "string") {
+      prompts.push({
+        type: "list",
+        name: "taroVersion",
+        message: "请选择 Taro的版本",
+        choices: taroChoices,
+      });
+    }
+  };
 
   askProjectName = function (conf, prompts) {
     if ((typeof conf.projectName as string | undefined) !== "string") {
